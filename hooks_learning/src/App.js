@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState } from "react";
+import React from "react";
 import useInput from "./hooks/useInput";
 import useTabs from "./hooks/useTabs";
 import useTitle from "./hooks/useTitle";
@@ -8,6 +8,11 @@ import useConfirm from "./hooks/useConfirm";
 import usePreventLeave from "./hooks/usePreventLeave";
 import useBeforeLeave from "./hooks/useBeforeLeave";
 import useFadeIn from './hooks/useFadeIn';
+import useNetwork from './hooks/useNetwork';
+import useScroll from './hooks/useScroll';
+import useFullscreen from './hooks/useFullscreen';
+import useNotification from './hooks/useNotification';
+import useAxios from './hooks/useAxios';
 
 
 const content = [
@@ -55,6 +60,23 @@ const App = () => {
   useBeforeLeave(begForLife);
 
   const fadeInH1 = useFadeIn(1.5,0.5);
+
+  const handleNetworkChange = (online) => {
+    console.log(online ? "We just went online" : "We are offline")
+  };
+  const onLine = useNetwork(handleNetworkChange);
+
+  const {y} = useScroll();
+
+  const onFullS = (isFull) => {
+    console.log(isFull ? "We are now in full" : "We are now in small");
+  }
+  const {element,triggerFull,exitFull} = useFullscreen(onFullS);
+
+  const triggerNotif = useNotification("Can I steal your kimchi?",{body:"I love kimchi, don't you?"});
+
+  const {loading, error, data, refetch} = useAxios({url:"https://cors-anywhere.herokuapp.com/https://yts.am/api/v2/list_movies.json"});
+  
 
   return (
     <div>
@@ -111,13 +133,53 @@ const App = () => {
           <h2>useBeforeLeave</h2>
           <p>let your mouse cursor out of the screen 
             and check what happens at the console. 
-            (clientY is less of equal than 0)</p>
+            (clientY is less or equal than 0)</p>
         </div>
 
         <div className="useFadeIn">
           <h2>useFadeIn</h2>
           <p>Hello! will fade in with duration of 1.5s and delay of 0.5s</p>
           <h3 {...fadeInH1}>Hello!</h3>
+        </div>
+
+        <div className="useNetwork">
+          <h2>useNetwork</h2>
+          <p>"Online" below goes offline when the browser goes offline</p>
+          <h3>{onLine ? "Online" : "Offline"}</h3>
+        </div>
+
+        <div className="useScroll">
+          <h2>useScroll</h2>
+          <p>In fullscreen situation, "Hi" below turns red when "y" goes higher 
+            than 1300 which can be found in the console</p>
+          <h3 style={{color: y > 1300 ? "red" : "blue"}}>Hi</h3>
+        </div>
+
+        <div className="useFullscreen">
+          <h2>useFullscreen</h2>
+          <div ref={element} style={{border:"0px",padding:"0"}}>
+            <img 
+          src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fhtml5box.com%2Fhtml5gallery%2Fimages%2FWilderness_1024.jpg&f=1&nofb=1" 
+          alt="" style={{width:"200px"}} 
+          ></img><br></br>
+          <button onClick={exitFull}>Exit Fullscreen!</button>
+          </div>
+          <br></br>
+          <button onClick={triggerFull}>Make Fullscreen!</button>
+        </div>
+
+        <div className="useNotification">
+          <h2>useNotification</h2>
+          <p>Don't reject the alarm call!!!</p>
+          <button onClick={triggerNotif}>Notification</button>
+        </div>
+
+        <div className="useAxios">
+            <h2>useAxios</h2>
+            <p>Check the console and see what useAxios does</p>
+            <h4>fetch status : {data && data.status}</h4>
+            <h4>{loading? "loading":"loaded"}</h4>
+            <button onClick={refetch}>Refetch</button>
         </div>
 
       </div>

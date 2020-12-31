@@ -15,7 +15,7 @@ const useBeforeLeave = (onBefore) => {
         return (() => {
             document.removeEventListener("mouseleave",handle)
         });
-    },[handle]);
+    },[]);
 
 
 }
